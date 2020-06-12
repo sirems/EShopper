@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Infrastructure.Data;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +31,10 @@ namespace Web
             services.AddDbContext<AppIdentityDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("IdentityConnection")));
+
+            services.AddDbContext<ShopContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("ShopConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultUI()
