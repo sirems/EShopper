@@ -19,11 +19,29 @@ UI layer types
 
 >>>>Packages
 
-Application Core
+**Application Core
 
 
 
-Infrastructure
+**Infrastructure
+
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.AspNetCore.Identity
+Install-Package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
 
-UI layer
+
+
+
+Add-migration InitialIdentityModel -context AppIdentityDbContext -OutputDir "Identity/Migrations"
+Update-Database -context AppIdentityDbContext
+
+Add-migration Initial -context ShopContext -OutputDir "Data/Migrations"
+Update-Database -context ShopContext
+
+
+
+remove-migration -context ShopContext
+
+**UI layer
