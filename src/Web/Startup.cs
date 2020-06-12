@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApplicationCore.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
@@ -41,6 +42,7 @@ namespace Web
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddScoped(typeof(IAsyncRepository<>),typeof(EfRepository<>));
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
