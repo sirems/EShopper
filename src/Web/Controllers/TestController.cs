@@ -12,6 +12,7 @@ namespace Web.Controllers
     public class TestController : Controller
     {
         private readonly IAsyncRepository<Category> _categoryRepository;
+        //new EfRepository(dbcontext)
 
 
         public TestController(IAsyncRepository<Category> categoryRepository)
