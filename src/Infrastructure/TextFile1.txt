@@ -1,0 +1,24 @@
+﻿ //await shopContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Categories ON");
+            using (var tran=shopContext.Database.BeginTransaction())
+            {
+                if (!await shopContext.Categories.AnyAsync())
+                {
+                    await shopContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Categories ON");
+                    shopContext.Categories.AddRange(GetCategories());
+                    await shopContext.SaveChangesAsync();
+                    await shopContext.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT Categories OFF");
+                }
+                if (!await shopContext.Brands.AnyAsync())
+                {
+                    shopContext.Brands.AddRange(GetBrands());
+                    await shopContext.SaveChangesAsync();
+                }
+                if (!await shopContext.Products.AnyAsync())
+                {
+                    shopContext.Products.AddRange(GetProducts());
+                    await shopContext.SaveChangesAsync();
+                }
+
+
+                await tran.CommitAsync();
+            }
