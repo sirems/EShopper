@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Specifications;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Web.Interfaces;
 using Web.ViewModels;
@@ -24,14 +25,27 @@ namespace Web.Services
             _productRepository = productRepository;
         }
 
-        public async Task<HomeIndexViewModel> GetHomeIndexViewModel(int? categoryId,int? brandId)
+        public async Task<HomeIndexViewModel> GetHomeIndexViewModel(int pageIndex, int itemsPerPage, int? categoryId, int? brandId)
         {
+            int totalItems = await _productRepository.CountAsync(new ProductsFilterSpecification(categoryId, brandId));
+
+            var products = await _productRepository.ListAsync
+            (
+                new ProductsFilterPaginatedSpecification
+                (
+                    (pageIndex - 1) * itemsPerPage,
+                    itemsPerPage,
+                    categoryId,
+                    brandId
+                    )
+                );
+
             var vm = new HomeIndexViewModel
             {
                 Categories = await GetCategories(),
                 Brands = await GetBrands(),
-                Products = (await _productRepository.ListAsync(new ProductsFilterSpecification(categoryId,brandId)))
-                    .Select(x=> new ProductViewModel
+                Products = products
+                    .Select(x => new ProductViewModel
                     {
                         Id = x.Id,
                         ProductName = x.ProductName,
@@ -41,11 +55,20 @@ namespace Web.Services
 
                     }).ToList(),
                 CategoryId = categoryId,
-                BrandId = brandId
+                BrandId = brandId,
+                PaginationInfo = new PaginationInfoViewModel()
+                {
+                    TotalItems = totalItems,
+                    TotalPages = (int)Math.Ceiling((decimal)totalItems/itemsPerPage),
+                    ActualPage = pageIndex,
+                    ItemsOnPage = products.Count
+                }
             };
             return vm;
         }
-            
+
+
+
         public async Task<List<SelectListItem>> GetCategories()
         {
             var categories = await _categoryRepository.ListAllAsync();
@@ -69,7 +92,7 @@ namespace Web.Services
                 .ToList();
 
             var allItem = new SelectListItem() { Value = null, Text = "All" };
-            items.Insert(0,allItem);
+            items.Insert(0, allItem);
 
             return items;
         }

@@ -13,6 +13,7 @@ namespace ApplicationCore.Interfaces
 
         Task<IReadOnlyList<T>> ListAsync(ISpecification<T> specification);
         //Expression<Func<T, bool>> predicate
+        Task<int> CountAsync(ISpecification<T> specification);
     }
 }
-    
+        

@@ -32,11 +32,17 @@
 
 @*https://startbootstrap.com/templates/shop-homepage/*@
 
-@*TODO:Partial!!*@
 <div class="row">
     @foreach (var product in Model.Products)
     {   
         <partial name="_ProductPartial" model="product"/>
     }
 
+</div>
+
+<div>
+    Toplam sayfa adedi:@Model.PaginationInfo.TotalPages <br />
+    Şuan ki sayfa: @Model.PaginationInfo.ActualPage <br />
+    Toplam öğe adedi:@Model.PaginationInfo.TotalItems <br />
+    Bu sayfadaki öğe adedi: @Model.PaginationInfo.ItemsOnPage<br />
 </div>
