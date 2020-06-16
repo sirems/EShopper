@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
+using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
@@ -20,12 +21,17 @@ namespace Infrastructure.Data
         }
         public async Task<IReadOnlyList<T>> ListAllAsync()
         {
-            return await _dbContext.Set<T>().ToListAsync();
+            return await _dbContext.Set<T>().ToListAsync(); 
         }
 
-        public async Task<IReadOnlyList<T>> ListAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> specification)
         {
-            return await _dbContext.Set<T>().Where(predicate).ToListAsync();
+            return await (await ApplySpecification(specification)).ToListAsync();
+        }
+
+        private async Task<IQueryable<T>> ApplySpecification(ISpecification<T> specification)
+        {
+            return await EfSpecificationEvaluator<T>.GetQuery(_dbContext.Set<T>().AsQueryable(), specification);
         }
     }
 }

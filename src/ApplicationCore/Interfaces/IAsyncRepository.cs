@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ApplicationCore.Entities;
+using Ardalis.Specification;
 
 namespace ApplicationCore.Interfaces
 {
@@ -10,6 +11,8 @@ namespace ApplicationCore.Interfaces
     {
         Task<IReadOnlyList<T>> ListAllAsync();
 
-        Task<IReadOnlyList<T>> ListAsync(Expression<Func<T, bool>> predicate);
+        Task<IReadOnlyList<T>> ListAsync(ISpecification<T> specification);
+        //Expression<Func<T, bool>> predicate
     }
 }
+    

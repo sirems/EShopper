@@ -20,6 +20,7 @@ UI layer types
 >>>>Packages
 
 **Application Core
+install-package Ardalis.Specification
 
 
 
