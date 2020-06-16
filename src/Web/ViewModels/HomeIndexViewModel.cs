@@ -9,7 +9,7 @@ namespace Web.ViewModels
 {
     public class HomeIndexViewModel
     {
-        public IReadOnlyList<Product> Products { get; set; }
+        public List<ProductViewModel> Products { get; set; }
         public List<SelectListItem> Categories { get; set; }
         public List<SelectListItem> Brands { get; set; }
         public int? CategoryId { get; set; }
