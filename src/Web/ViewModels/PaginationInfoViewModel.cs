@@ -11,6 +11,8 @@ namespace Web.ViewModels
         public int TotalPages { get; set; }
         public int ActualPage { get; set; }
         public int ItemsOnPage { get; set; }
+        public string Previous { get; set; }
+        public string Next { get; set; }    
     }
 }
                 

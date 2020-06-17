@@ -59,11 +59,15 @@ namespace Web.Services
                 PaginationInfo = new PaginationInfoViewModel()
                 {
                     TotalItems = totalItems,
-                    TotalPages = (int)Math.Ceiling((decimal)totalItems/itemsPerPage),
-                    ActualPage = pageIndex,
-                    ItemsOnPage = products.Count
+                    TotalPages = (int)Math.Ceiling((decimal)totalItems / itemsPerPage),
+                    ActualPage = totalItems == 0 ? 0 : pageIndex,
+                    ItemsOnPage = products.Count,
                 }
             };
+
+            vm.PaginationInfo.Previous = vm.PaginationInfo.ActualPage <= 1 ? "disabled" : "";
+            vm.PaginationInfo.Next = vm.PaginationInfo.ActualPage >= vm.PaginationInfo.TotalPages ? "disabled" : "";
+
             return vm;
         }
 

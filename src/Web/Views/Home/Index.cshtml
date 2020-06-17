@@ -1,7 +1,22 @@
 ﻿@model HomeIndexViewModel
 @{
     ViewData["Title"] = "Home Page";
+    //var routeData = new Dictionary<string, string>()
+    //{
+    //    {"kategori", "meyve"},
+    //    {"urun", "armut"}
+    //};
 }
+
+@*<a asp-route-kategori="meyve" asp-route-urun="armut" >Link</a>*@
+
+@*<a asp-all-route-data="routeData">link</a>
+<hr/>
+@foreach (var item in Context.Request.Query)
+{
+    @item.Key 
+    @item.Value
+}*@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
@@ -14,7 +29,7 @@
         <div class="col">
             <div class="form-group">
                 <label asp-for="CategoryId">Category</label>
-                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control" onchange="this.form.submit()" >
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control" onchange="this.form.submit()">
                 </select>
             </div>
         </div>
@@ -28,21 +43,31 @@
     </div>
 </form>
 
+@if (Model.Products.Count>0)
+{
+    @*https://startbootstrap.com/templates/shop-homepage/*@
+
+    <div class="row">
+        @foreach (var product in Model.Products)
+        {
+            <partial name="_ProductPartial" model="product" />
+        }
+
+    </div>
+
+    <partial name="_PaginationPartial" model="Model.PaginationInfo"/>
+}
+
+else
+{
+    <div class="text-center p-5">No products were found matching your selection!</div>
+}
 
 
-@*https://startbootstrap.com/templates/shop-homepage/*@
 
-<div class="row">
-    @foreach (var product in Model.Products)
-    {   
-        <partial name="_ProductPartial" model="product"/>
-    }
-
-</div>
-
-<div>
-    Toplam sayfa adedi:@Model.PaginationInfo.TotalPages <br />
-    Şuan ki sayfa: @Model.PaginationInfo.ActualPage <br />
-    Toplam öğe adedi:@Model.PaginationInfo.TotalItems <br />
-    Bu sayfadaki öğe adedi: @Model.PaginationInfo.ItemsOnPage<br />
-</div>
+@*<div class="mt-3">
+        Toplam sayfa adedi:@Model.PaginationInfo.TotalPages <br />
+        Şu anki sayfa: @Model.PaginationInfo.ActualPage <br />
+        Toplam öğe adedi:@Model.PaginationInfo.TotalItems <br />
+        Bu sayfadaki öğe adedi: @Model.PaginationInfo.ItemsOnPage<br />
+    </div>*@
