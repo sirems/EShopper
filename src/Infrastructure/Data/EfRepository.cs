@@ -14,11 +14,17 @@ namespace Infrastructure.Data
     public class EfRepository<T> : IAsyncRepository<T> where T : BaseEntity
     {
         private readonly ShopContext _dbContext;
-
+        
         public EfRepository(ShopContext dbContext)
         {
             _dbContext = dbContext;
         }
+
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbContext.FindAsync<T>(id);
+        }
+
         public async Task<IReadOnlyList<T>> ListAllAsync()
         {
             return await _dbContext.Set<T>().ToListAsync();
@@ -29,9 +35,38 @@ namespace Infrastructure.Data
             return await (await ApplySpecification(specification)).ToListAsync();
         }
 
+        public async Task<T> AddAsync(T entity)
+        {
+            _dbContext.Set<T>().Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            _dbContext.Update(entity);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(T entity)
+        {
+            _dbContext.Remove(entity);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<int> CountAsync(ISpecification<T> specification)
         {
             return await (await ApplySpecification(specification)).CountAsync();
+        }
+
+        public async Task<T> FirstAsync(ISpecification<T> specification)
+        {
+            return await(await ApplySpecification(specification)).FirstAsync();
+        }
+
+        public async Task<T> FirstOrDefaultAsync(ISpecification<T> specification)
+        {
+            return await(await ApplySpecification(specification)).FirstOrDefaultAsync();
         }
 
         private async Task<IQueryable<T>> ApplySpecification(ISpecification<T> specification)
