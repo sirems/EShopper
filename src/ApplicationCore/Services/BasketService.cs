@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Specifications;
+using Ardalis.GuardClauses;
 
 namespace ApplicationCore.Services
 {
@@ -13,46 +14,70 @@ namespace ApplicationCore.Services
     {
         private readonly IAsyncRepository<Basket> _basketRepository;
 
-        public BasketService(IAsyncRepository<Basket>basketRepository)
+        public BasketService(IAsyncRepository<Basket> basketRepository)
         {
             _basketRepository = basketRepository;
         }
-        public async Task<int> GetBasketItemCountAsync(string userName)
+        public async Task<int> GetBasketItemCountAsync(string buyerId)
         {
-            throw new NotImplementedException();
+            Guard.Against.NullOrEmpty(buyerId, nameof(buyerId));
+            var basket = await _basketRepository
+                .FirstOrDefaultAsync(new BasketWithItemsSpecification(buyerId));
+
+            if (basket == null)
+            {
+                return 0;
+            }
+
+            return basket.Items.Sum(x => x.Quantity);
         }
 
         public async Task TransferBasketAsync(string anonymousId, string userName)
         {
+            //Todo: anonim sepetten kullanıcı sepetine aktar
             throw new NotImplementedException();
         }
 
         public async Task AddItemToBasket(int basketId, int productId, decimal price, int quantity = 1)
         {
             var basket = await _basketRepository
-                .FirstAsync(new BasketWithItemsSpecification(basketId));
+                .FirstOrDefaultAsync(new BasketWithItemsSpecification(basketId));
 
             var basketItem = basket.Items.FirstOrDefault(x => x.ProductId == productId);
-            if (basketItem==null)
+            if (basketItem == null)
             {
-                basket.Items.Add(new BasketItem{ProductId = productId,Quantity = quantity,UnitPrice = price});
+                basket.Items.Add(new BasketItem { ProductId = productId, Quantity = quantity, UnitPrice = price });
             }
             else
             {
                 basketItem.Quantity += quantity;
             }
 
-           await _basketRepository.UpdateAsync(basket);
+            await _basketRepository.UpdateAsync(basket);
         }
-            
-        public async Task SetQuantities(int basketId, Dictionary<string, int> quantities)
+
+        public async Task SetQuantities(int basketId, Dictionary<int, int> quantities)
         {
-            throw new NotImplementedException();
+            var basket = await _basketRepository
+                .FirstOrDefaultAsync(new BasketWithItemsSpecification(basketId));
+            Guard.Against.Null(basket, nameof(basket));
+
+            foreach (var basketItem in basket.Items)
+            {
+                if (quantities.ContainsKey(basketItem.ProductId))
+                {
+                    basketItem.Quantity = quantities[basketItem.ProductId];
+                }
+            }
+
+            basket.Items.RemoveAll(x => x.Quantity == 0);
+            await _basketRepository.UpdateAsync(basket);
         }
 
         public async Task DeleteBasketAsync(int basketId)
         {
-            throw new NotImplementedException();
+            var basket = await _basketRepository.GetByIdAsync(basketId);
+            await _basketRepository.DeleteAsync(basket);
         }
     }
 }
